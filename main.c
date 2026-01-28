@@ -2,8 +2,8 @@
 //#include "readLine.h"
 #include <stdlib.h>
 #include <stdio.h>
-
-
+#include <ctype.h>
+#include <string.h>
 char* readLine(char* buffer){
     
     int num_bytes_read=0;
@@ -40,6 +40,10 @@ int main(int argc,char *argv[]){
     do{
         printf(">");
         input = readLine(buffer);
+        for(int i=0;i<strlen(input);i++){
+            input[i]=tolower(input[i]);
+        }
+
         printf("input: %s\n",input);
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
     }while(*input!='\0');
