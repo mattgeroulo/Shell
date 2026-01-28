@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <syscall.h>
+
+#define DEBUG 0
 
 char* readLine(char* buffer){
     
@@ -25,8 +28,9 @@ char* readLine(char* buffer){
         buffer[i]=(char)c;
         i++;
     }
-    
-    printf("Number of bytes read: %d\n",num_bytes_read);
+    #if DEBUG
+        printf("Number of bytes read: %d\n",num_bytes_read);
+    #endif
     //char str[num_bytes_read]=buffer;
     int input=0;
     //printf("Buffer: %s\n",buffer);
@@ -34,8 +38,6 @@ char* readLine(char* buffer){
     return buffer;
     
 }
-
-
 
 int main(int argc,char *argv[]){
     int status=1;
@@ -50,22 +52,47 @@ int main(int argc,char *argv[]){
         }
 
         if(!strcmp(input,"ls")){
-            printf("input is ls");
+            #if DEBUG
+                printf("input is ls\n");
+            #endif
             //fork to a child process, set child process fd to this process fd, execute ls
             pid_t pid = fork();
+            //both processes run from here, use pid value to determine who is child and who is parent
+
             if (pid== -1){
-                printf("Failed to fork from parent");
+                #if DEBUG
+                    printf("Failed to fork from parent\n");
+                #endif
             }
-            printf("child pid: %u\n", getpid());
-            printf("Parent pid: %u\n", getppid());
-            char * args[2];
-            args[0]='C:\Program Files\Git\usr\bin\ls.exe';
-            args[1]=NULL;
+            else if (pid==0){
+                //CHILD PROCESS
+                char * args[2];
+                args[0]="/bin/ls";
+                args[1]=NULL;
+                execv(args[0],args);
+                #if DEBUG
+                    printf("Error on child process exec call");
+                #endif
+                exit(1);
+            }else{
+                wait(NULL);
+                #if DEBUG
+                    printf("Parent: child process finished,we back to shell");
+                #endif
+            }
+            //pid_t child_pid = getpid();
+            //pid_t parent_pid = getppid();
+            //printf("child pid: %u\n", child_pid);
+            //printf("Parent pid: %u\n", parent_pid);
+          
+            
         }
         else if(!strcmp(input,"exit")){
             break;
         }
-        printf("input: %s\n",input);
+        #if DEBUG
+            printf("input: %s\n",input);
+        #endif
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
     }while(*input!='\0');
     free(input);
