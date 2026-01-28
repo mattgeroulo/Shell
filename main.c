@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 char* readLine(char* buffer){
     
@@ -50,6 +52,15 @@ int main(int argc,char *argv[]){
         if(!strcmp(input,"ls")){
             printf("input is ls");
             //fork to a child process, set child process fd to this process fd, execute ls
+            pid_t pid = fork();
+            if (pid== -1){
+                printf("Failed to fork from parent");
+            }
+            printf("child pid: %u\n", getpid());
+            printf("Parent pid: %u\n", getppid());
+            char * args[2];
+            args[0]='C:\Program Files\Git\usr\bin\ls.exe';
+            args[1]=NULL;
         }
         else if(!strcmp(input,"exit")){
             break;
