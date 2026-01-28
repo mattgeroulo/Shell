@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 
-char* readLine(){
+char* readLine(char* buffer){
     
     int num_bytes_read=0;
-    char* buffer =  malloc(sizeof(char)*128);
+    
     int i=0;
     char c;
     while(1){
@@ -36,9 +36,10 @@ char* readLine(){
 int main(int argc,char *argv[]){
     int status=1;
     char * input;
+    char* buffer =  malloc(sizeof(char)*128);
     do{
         printf(">");
-        input = readLine();
+        input = readLine(buffer);
         printf("input: %s\n",input);
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
     }while(*input!='\0');
