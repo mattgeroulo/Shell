@@ -4,24 +4,30 @@
 #include <stdio.h>
 
 
-int readLine(){
+char* readLine(){
     
     int num_bytes_read=0;
     char* buffer =  malloc(sizeof(char)*128);
+    int i=0;
+    char c;
     while(1){
-        char c= getchar();
-        if(c=='\n'){
+        c= getchar();
+        if (c=='\n' || c==EOF){
+            buffer[i]='\0';
             break;
         }
         num_bytes_read+=sizeof(c);
+       // printf("%d",c);
+        buffer[i]=(char)c;
+        i++;
     }
-    free(buffer);
+    
     printf("Number of bytes read: %d\n",num_bytes_read);
-    if(num_bytes_read==0){
-        return 1;
-    }else{
-        return 0;
-    }
+    //char str[num_bytes_read]=buffer;
+    int input=0;
+    //printf("Buffer: %s\n",buffer);
+    //str[-1]='\n';
+    return buffer;
     
 }
 
@@ -29,9 +35,12 @@ int readLine(){
 
 int main(int argc,char *argv[]){
     int status=1;
-    
+    char * input;
     do{
         printf(">");
-        status = readLine();
-    }while(!status);
+        input = readLine();
+        printf("input: %s\n",input);
+        //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
+    }while(*input!='\0');
+    free(input);
 }
