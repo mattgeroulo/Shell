@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <unistd.h>
+
 char* readLine(char* buffer){
     
     int num_bytes_read=0;
@@ -36,6 +38,7 @@ char* readLine(char* buffer){
 int main(int argc,char *argv[]){
     int status=1;
     char * input;
+    char *const args[]={"ls","-l",(char *)NULL};
     char* buffer =  malloc(sizeof(char)*128);
     do{
         printf(">");
@@ -44,6 +47,13 @@ int main(int argc,char *argv[]){
             input[i]=tolower(input[i]);
         }
 
+        if(!strcmp(input,"ls")){
+            printf("input is ls");
+            //fork to a child process, set child process fd to this process fd, execute ls
+        }
+        else if(!strcmp(input,"exit")){
+            break;
+        }
         printf("input: %s\n",input);
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
     }while(*input!='\0');
