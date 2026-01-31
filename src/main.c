@@ -8,50 +8,31 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <syscall.h>
+#include "readLine.h"
 
-#define DEBUG 0
 
-char* readLine(char* buffer){
-    
-    int num_bytes_read=0;
-    
-    int i=0;
-    char c;
-    while(1){
-        c= getchar();
-        if (c=='\n' || c==EOF){
-            buffer[i]='\0';
-            break;
-        }
-        num_bytes_read+=sizeof(c);
-       // printf("%d",c);
-        buffer[i]=(char)c;
-        i++;
-    }
-    #if DEBUG
-        printf("Number of bytes read: %d\n",num_bytes_read);
-    #endif
-    //char str[num_bytes_read]=buffer;
-    int input=0;
-    //printf("Buffer: %s\n",buffer);
-    //str[-1]='\n';
-    return buffer;
-    
-}
+
+
+#define DEBUG 1
+
+
 
 int main(int argc,char *argv[]){
-    int status=1;
-    char * input;
-    char *const args[]={"ls","-l",(char *)NULL};
-    char* buffer =  malloc(sizeof(char)*128);
+    (void)argc;
+    (void)argv;
+    
+    //char *const args[]={"ls","-l",(char *)NULL};
+    size_t buffer_size =128;
+    char* buffer =  malloc(buffer_size);
     do{
         printf(">");
-        input = readLine(buffer);
-        for(int i=0;i<strlen(input);i++){
-            input[i]=tolower(input[i]);
+        buffer = readLine(buffer,buffer_size);
+        size_t buffer_len= strlen(buffer);
+        for(size_t i=0;i<buffer_len;i++){
+            buffer[i]=tolower((unsigned char)buffer[i]);
         }
 
-        if(!strcmp(input,"ls")){
+        if(!strcmp(buffer,"ls")){
             #if DEBUG
                 printf("input is ls\n");
             #endif
@@ -91,13 +72,11 @@ int main(int argc,char *argv[]){
           
             
         }
-        else if(!strcmp(input,"exit")){
+        else if(!strcmp(buffer,"exit")){
             break;
         }
-        #if DEBUG
-            printf("input: %s\n",input);
-        #endif
+       
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
-    }while(*input!='\0');
-    free(input);
+    }while(*buffer!='\0');
+    free(buffer);
 }
