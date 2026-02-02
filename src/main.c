@@ -2,77 +2,51 @@
 //#include "readLine.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <syscall.h>
 #include "readLine.h"
-
+#include "ls.h"
+#include <ctype.h>
 
 
 
 #define DEBUG 1
+typedef void (*command_fn)(void);
+typedef struct{
+    char* cmd ;
+    char* args[];
+}shellInput;
 
-
-
-int main(int argc,char *argv[]){
-    (void)argc;
-    (void)argv;
+int main(){
+    
+    char* argv[24]={0};
+    //command_fn commands[256]={0};
     
     //char *const args[]={"ls","-l",(char *)NULL};
     size_t buffer_size =128;
+    
     char* buffer =  malloc(buffer_size);
+    shellInput *input = malloc(sizeof(shellInput));
+    input->args[0]= "hello";
+    input->cmd = "ls";
+    printf("%s",input->cmd);
+    printf("size of shellInput: %ld\n",sizeof(shellInput));
     do{
+       
+       // char input;
         printf(">");
         buffer = readLine(buffer,buffer_size);
-        size_t buffer_len= strlen(buffer);
-        for(size_t i=0;i<buffer_len;i++){
-            buffer[i]=tolower((unsigned char)buffer[i]);
-        }
-
+        //buffer contains standard io input, parse next
+        
         if(!strcmp(buffer,"ls")){
-            #if DEBUG
-                printf("input is ls\n");
-            #endif
-            //fork to a child process, set child process fd to this process fd, execute ls
-            pid_t pid = fork();
-            //both processes run from here, use pid value to determine who is child and who is parent
-           
-            if (pid== -1){
-                #if DEBUG
-                    printf("Failed to fork from parent\n");
-                #endif
-            }
-            else if (pid==0){
-                //CHILD PROCESS
-                #if DEBUG
-                    printf("Child process is: %u , Parent process is %u \n",getpid(),getppid());
-                #endif
-                char * args[2];
-                args[0]="/bin/ls";
-                args[1]=NULL;
-                execv(args[0],args);
-                #if DEBUG
-                    printf("Error on child process exec call\n");
-                #endif
-                exit(1);
-            }else{
-                pid_t child_pid = wait(NULL);
-                #if DEBUG
-                    printf("child process reaped, id was : %u\n",child_pid);
-                    printf("Parent: child process finished,we back to shell\n");
-                #endif
-            }
-            //pid_t child_pid = getpid();
-            //pid_t parent_pid = getppid();
-            //printf("child pid: %u\n", child_pid);
-            //printf("Parent pid: %u\n", parent_pid);
-          
-            
+            ls(argv);
+            printf("In ls statement\n");
+        }else{
+            ls(argv);
+            printf("In the else statement\n");
         }
-        else if(!strcmp(buffer,"exit")){
+        
+        
+         if(!strcmp(buffer,"exit")){
             break;
         }
        
