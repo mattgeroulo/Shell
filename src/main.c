@@ -42,7 +42,7 @@ int main(){
         input->cmd = buffer;
         //buffer contains standard io input, parse next
         //lets populate input->args[0], then update ls to actually use them
-        parseInput(input->cmd,buffer_size,input->args[0]);
+        parseInput(input->cmd,buffer_size,input->args);
         if(!strcmp(input->cmd,"ls")){
             input->command_function=ls;
             input->command_function(input->args);
@@ -58,7 +58,7 @@ int main(){
        
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
     }while(*buffer!='\0');
-    free(input->args[0]);
+   
     free(input);
     free(buffer);
 }
