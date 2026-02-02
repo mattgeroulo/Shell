@@ -25,20 +25,23 @@ int main(){
     size_t buffer_size =128;
     
     char* buffer =  malloc(buffer_size);
-    shellInput *input = malloc(sizeof(shellInput));
-    input->args[0]= "hello";
+    shellInput *input = malloc(sizeof(shellInput)+2*sizeof(char*));
+   
+    input->args[0]= "-l";
+    input->args[1]=NULL;
     input->cmd = "ls";
-    printf("%s",input->cmd);
-    printf("size of shellInput: %ld\n",sizeof(shellInput));
+    
+   
     do{
        
        // char input;
         printf(">");
         buffer = readLine(buffer,buffer_size);
+        input->cmd = buffer;
         //buffer contains standard io input, parse next
-        
-        if(!strcmp(buffer,"ls")){
-            ls(argv);
+
+        if(!strcmp(input->cmd,"ls")){
+            ls(input->args);
             printf("In ls statement\n");
         }else{
             ls(argv);
