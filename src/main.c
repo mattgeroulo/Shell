@@ -7,7 +7,7 @@
 #include "ls.h"
 #include <ctype.h>
 
-
+#include "parseInput.h"
 
 #define DEBUG 1
 typedef void (*command_fn)(char** args);
@@ -31,25 +31,24 @@ int main(){
     char* buffer =  malloc(buffer_size);
     shellInput *input = malloc(sizeof(shellInput)+2*sizeof(char*));
    
-    input->args[0]= "None";
+    input->args[0]= malloc(128);
     input->args[1]=NULL;
+   
     do{
        
        // char input;
         printf(">");
         buffer = readLine(buffer,buffer_size);
         input->cmd = buffer;
-        input->command_function= ls;
         //buffer contains standard io input, parse next
-        input->command_function(input->args);
-        printf("just ran command through input\n");
-
+        //lets populate input->args[0], then update ls to actually use them
+        parseInput(input->cmd,buffer_size,input->args[0]);
         if(!strcmp(input->cmd,"ls")){
-            ls(input->args);
+            input->command_function=ls;
+            input->command_function(input->args);
             printf("In ls statement\n");
         }else{
-            ls(argv);
-            printf("In the else statement\n");
+            printf("Unsupported || incorrect function call\n");
         }
         
         
@@ -59,6 +58,7 @@ int main(){
        
         //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
     }while(*buffer!='\0');
+    free(input->args[0]);
     free(input);
     free(buffer);
 }
