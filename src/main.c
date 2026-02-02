@@ -6,7 +6,7 @@
 #include "readLine.h"
 #include "ls.h"
 #include <ctype.h>
-
+#include "echo.h"
 #include "parseInput.h"
 
 #define DEBUG 1
@@ -22,41 +22,40 @@ typedef struct{
 
 int main(){
     
-    char* argv[24]={0};
+    //char* argv[24]={0};
     //command_fn commands[256]={0};
     
     //char *const args[]={"ls","-l",(char *)NULL};
     size_t buffer_size =128;
     
     char* buffer =  malloc(buffer_size);
-    shellInput *input = malloc(sizeof(shellInput)+2*sizeof(char*));
+    shellInput *input = malloc(sizeof(shellInput)+256*sizeof(char*));
    
     input->args[0]= malloc(128);
     input->args[1]=NULL;
    
     do{
-       
-       // char input;
+
         printf(">");
         buffer = readLine(buffer,buffer_size);
         input->cmd = buffer;
-        //buffer contains standard io input, parse next
-        //lets populate input->args[0], then update ls to actually use them
         parseInput(input->cmd,buffer_size,input->args);
         if(!strcmp(input->cmd,"ls")){
             input->command_function=ls;
             input->command_function(input->args);
-            printf("In ls statement\n");
-        }else{
-            printf("Unsupported || incorrect function call\n");
+           // printf("In ls statement\n");
         }
-        
-        
-         if(!strcmp(buffer,"exit")){
+        else if(!strcmp(input->cmd,"echo")){        
+            input->command_function=echo;
+            input->command_function(input->args);
+           // printf("In ls statement\n");
+        }
+        else if(!strcmp(buffer,"exit")){
             break;
         }
-       
-        //printf("argv[0]: %s  argv[1]: %s",argv[0],argv[1]);
+        else{
+            printf("Unsupported || incorrect function call: %s\n",input->cmd);
+        }
     }while(*buffer!='\0');
    
     free(input);
